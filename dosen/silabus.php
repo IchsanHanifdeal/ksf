@@ -128,8 +128,9 @@ if (isset($_FILES['file'])) {
         // Simpan informasi file ke dalam database
         $namaFile = basename($_FILES["file"]["name"]);
         $ukuranFile = filesize($targetFile);
+        $deskripsi = isset($_POST['deskripsi']) ? mysqli_real_escape_string($koneksi, $_POST['deskripsi']) : '';
 
-        $query = "INSERT INTO Silabus (nama_file, ukuran_file) VALUES ('$namaFile', '$ukuranFile')";
+        $query = "INSERT INTO Silabus (nama_file, ukuran_file, deskripsi) VALUES ('$namaFile', '$ukuranFile', '$deskripsi')";
         $result = mysqli_query($koneksi, $query);
     } else {
         echo "Terjadi kesalahan saat memindahkan file yang diunggah.";
@@ -158,6 +159,7 @@ function printPDF($file)
                     <tr>
                         <th>No</th>
                         <th>Pembelajaran</th>
+                        <th>Deskripsi</th>
                         <th>Ukuran File</th>
                         <th>Opsi</th>
                     </tr>
@@ -167,56 +169,49 @@ function printPDF($file)
                     $filter = false;
 
                     if ($filter) {
-                        $sql = mysqli_query($koneksi, "SELECT * FROM Silabus");
+                        $query = "SELECT * FROM Silabus";
                     } else {
-                        $sql = mysqli_query($koneksi, "SELECT * FROM Silabus ORDER BY nama_file ASC");
+                        $query = "SELECT * FROM Silabus ORDER BY nama_file ASC";
                     }
-                    if (mysqli_num_rows($sql) == 0) {
+
+                    $result = mysqli_query($koneksi, $query);
+
+                    if (mysqli_num_rows($result) == 0) {
                         echo '<tr><td colspan="4">Data Tidak Ada.</td></tr>';
                     } else {
                         $no = 1;
-                        while ($row = mysqli_fetch_assoc($sql)) {
+                        while ($row = mysqli_fetch_assoc($result)) {
                             $file = 'uploads/silabus/' . $row['nama_file'];
                             $fileInfo = getFileInfo($file);
-                            echo '
-                            <tr>
-                                <td>' . $no . '</td>
-                                <td>
-                                    <img src="icons/' . $fileInfo['Logo File'] . '" alt="' . $fileInfo['Ekstensi File'] . '" height="50px" width="50px">
-                                    ' . $fileInfo['Nama File'] . '
-                                </td>
-                                <td>' . $fileInfo['Ukuran File'] . '</td>
-                                <td>
-                                    <a href="download.php?file=' . urlencode($file) . '" class="btn btn-success">Download</a>
-                                    <button class="btn btn-primary" onclick="previewFile(\'' . urlencode($file) . '\')">Preview</button>
-                                    <a href="hapus_silabus.php?id=' . $row['id'] . '" class="btn btn-danger">Hapus</a>
-                                </td>
-                            </tr>';
+                            echo '<tr>
+                <td>' . $no . '</td>
+                <td>
+                    <img src="icons/' . $fileInfo['Logo File'] . '" alt="' . $fileInfo['Ekstensi File'] . '" height="50px" width="50px">
+                    ' . $fileInfo['Nama File'] . '
+                    <div id="previewModal" style="display: none;">
+                        <div id="modal-content">
+                            <span id="close" onclick="closeModal()">&times;</span>
+                            <div id="previewModalBody">
+                                <div id="videoPreviewContainer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>                        
+                </td>
+                <td>' . $row['Deskripsi'] . '</td>
+                <td>' . $fileInfo['Ukuran File'] . '</td>
+                <td>
+                    <a href="download.php?file=' . urlencode($file) . '" class="btn btn-success">Download</a>
+                    <button class="btn btn-primary" onclick="previewFile(\'' . urlencode($file) . '\')">Preview</button>
+                    <a href="hapus_silabus.php?id=' . $row['id'] . '" class="btn btn-danger">Hapus</a>
+                </td>
+            </tr>';
                             $no++;
                         }
                     }
                     ?>
                 </tbody>
             </table>
-        </div>
-        <div id="previewModal" style="display: none;">
-            <div id="modal-content">
-                <span id="close" onclick="closeModal()">&times;</span>
-                <div id="previewModalBody">
-                    <!-- Preview content goes here -->
-                    <div id="videoPreviewContainer">
-                        <!-- Video preview will be displayed here -->
-                    </div>
-                    <div id="commentsSection">
-                        <h3>Comments</h3>
-                        <div id="commentsList">
-                            <!-- Comments will be displayed here -->
-                        </div>
-                        <textarea id="commentInput" placeholder="Leave a comment"></textarea>
-                        <button onclick="postComment()">Post Comment</button>
-                    </div>
-                </div>
-            </div>
         </div>
         <hr />
         <form action="" method="post" enctype="multipart/form-data">
@@ -225,6 +220,10 @@ function printPDF($file)
                 <input type="file" name="file" id="file" class="form-control-file">
             </div>
             <button type="submit" class="btn btn-primary">Upload</button>
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi:</label>
+                <textarea name="deskripsi" id="deskripsi" class="form-control"></textarea>
+            </div>
         </form>
     </div>
 </div>
@@ -250,19 +249,18 @@ include("footer.php");
 
         var videoPreviewContainer = document.getElementById('videoPreviewContainer');
         videoPreviewContainer.innerHTML = '<iframe src="preview.php?file=' + file + '" width="100%" height="400px" frameborder="0"></iframe>';
-
-        // Load comments for this previewed file
         loadComments(file);
     }
 
     function loadComments(file) {
-        // Fetch comments for the given file and display them in the comments section
-        // You can make an AJAX request to a server to fetch comments for the specific file
-        // For simplicity, let's assume comments are pre-loaded in a variable.
-
-        var comments = [
-            { username: 'User1', comment: 'This is great!' },
-            { username: 'User2', comment: 'Awesome content.' }
+        var comments = [{
+                username: 'User1',
+                comment: 'This is great!'
+            },
+            {
+                username: 'User2',
+                comment: 'Awesome content.'
+            }
         ];
 
         var commentsList = document.getElementById('commentsList');
@@ -282,19 +280,15 @@ include("footer.php");
         var comment = commentInput.value.trim();
 
         if (comment !== '') {
-            // Here, you would typically make an AJAX request to send the comment to the server and save it
-            // For simplicity, let's just display the comment
-
             var commentsList = document.getElementById('commentsList');
             var commentItem = document.createElement('div');
             commentItem.classList.add('commentItem');
             commentItem.innerHTML = '<strong>User:</strong> ' + comment;
             commentsList.appendChild(commentItem);
-
-            // Clear the comment input after posting
             commentInput.value = '';
         }
     }
+
     function closeModal() {
         var modal = document.getElementById('previewModal');
         modal.style.display = 'none';
