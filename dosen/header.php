@@ -35,7 +35,7 @@ include("akses_dosen.php");
 		<div class="collapse navbar-collapse" id="myNavbar">
 		  <ul class="nav navbar-nav navbar-left">
 			<li<?php if ($thisPage=="Dashboard") echo " class=\"active\""; ?>><a href="index.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-			<li<?php if ($thisPage=="Silabus") echo " class=\"active\""; ?>><a href="silabus.php" data-toggle="tooltip" data-placement="bottom" title="Silabus"><span class="glyphicon glyphicon-book"></span> Silabus</a></li>
+			<li<?php if ($thisPage=="Silabus") echo " class=\"active\""; ?>><a href="silabus.php" data-toggle="tooltip" data-placement="bottom" title="Silabus"><span class="glyphicon glyphicon-book"></span> Pembelajaran</a></li>
 			<li<?php if ($thisPage=="Materi") echo " class=\"active\""; ?>><a href="materi.php" data-toggle="tooltip" data-placement="bottom" title="Materi"><span class="glyphicon glyphicon-folder-open"></span> Materi</a></li>
 			<li<?php if ($thisPage=="Data Dosen") echo " class=\"active\""; ?>><a href="data.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Dosen"><span class="glyphicon glyphicon-list"></span> Data Dosen</a></li>
 			<li<?php if ($thisPage=="Data Mahasiswa") echo " class=\"active\""; ?>><a href="data_mahasiswa.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Mahasiswa"><span class="glyphicon glyphicon-list"></span> Data Mahasiswa</a></li>

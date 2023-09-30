@@ -1,7 +1,7 @@
 <?php
-$thisPage = "Silabus";
-$title = "Silabus";
-$description = "Halaman Silabus";
+$thisPage = "Pembelajaran";
+$title = "Pembelajaran";
+$description = "Halaman Pembelajaran";
 include("header.php");
 include("../koneksi.php");
 
@@ -89,13 +89,13 @@ function printPDF($file)
 
 <div class="container">
     <div class="content">
-        <h2>Silabus</h2>
+        <h2>Pembelajaran</h2>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Silabus</th>
+                        <th>Pembelajaran</th>
                         <th>Ukuran File</th>
                         <th>Opsi</th>
                     </tr>

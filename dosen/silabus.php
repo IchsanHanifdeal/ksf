@@ -1,7 +1,7 @@
 <?php
-$thisPage = "Silabus";
-$title = "Silabus";
-$description = "Halaman Silabus";
+$thisPage = "Pembelajaran";
+$title = "Pembelajaran";
+$description = "Halaman Pembelajaran";
 include("header.php");
 include("../koneksi.php");
 
@@ -23,6 +23,16 @@ function generatePreview($file, $extension)
     return $preview;
 }
 
+function generateVideoPreview($file)
+{
+    $preview = '<video controls width="100%" height="auto">
+                    <source src="' . $file . '" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>';
+
+    return $preview;
+}
+
 // Fungsi untuk mendapatkan informasi tentang silabus yang diunggah
 function getFileInfo($file)
 {
@@ -30,12 +40,20 @@ function getFileInfo($file)
     $fileSize = filesize($file);
     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $fileLogo = getFileLogo($fileExtension);
+    $filePreview = '';
+
+    if ($fileExtension === 'mp4' || $fileExtension === 'avi') {
+        $filePreview = generateVideoPreview($file);
+    } else {
+        $filePreview = generatePreview($file, $fileExtension);
+    }
 
     $info = array(
         'Nama File' => $fileName,
         'Ukuran File' => formatFileSize($fileSize),
         'Ekstensi File' => $fileExtension,
         'Logo File' => $fileLogo,
+        'Preview' => $filePreview,
     );
 
     return $info;
@@ -61,6 +79,10 @@ function getFileLogo($fileExtension)
         case 'ppt':
         case 'pptx':
             $logo = 'ppt.png';
+            break;
+        case 'mp4':
+        case 'avi':
+            $logo = 'mp4.png';
             break;
         default:
             $logo = 'file.png';
@@ -88,10 +110,10 @@ if (isset($_FILES['file'])) {
     // Tentukan nama file yang akan diunggah
     $targetFile = $targetDir . basename($_FILES["file"]["name"]);
     // Cek apakah file yang diunggah memiliki ekstensi yang diizinkan
-    $allowedExtensions = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx');
+    $allowedExtensions = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'mp4', 'avi');
     $fileExtension = strtolower(pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION));
     if (!in_array($fileExtension, $allowedExtensions)) {
-        echo "File yang diunggah harus dalam format PDF, Word (DOC/DOCX), Excel (XLS/XLSX), atau PowerPoint (PPT/PPTX).";
+        echo "File yang diunggah harus dalam format PDF, Word (DOC/DOCX), Excel (XLS/XLSX), PowerPoint (PPT/PPTX), MP4, atau AVI.";
         exit;
     }
     // Cek apakah terdapat error saat mengunggah file
@@ -109,19 +131,11 @@ if (isset($_FILES['file'])) {
 
         $query = "INSERT INTO Silabus (nama_file, ukuran_file) VALUES ('$namaFile', '$ukuranFile')";
         $result = mysqli_query($koneksi, $query);
-
-        if ($result) {
-            echo "<br>Informasi file berhasil disimpan ke database.";
-
-            // Tampilkan tombol download
-            echo '<a href="download.php?file=' . urlencode($targetFile) . '" class="btn btn-success">Download</a>';
-        } else {
-            echo "<br>Terjadi kesalahan saat menyimpan informasi file ke database.";
-        }
     } else {
         echo "Terjadi kesalahan saat memindahkan file yang diunggah.";
     }
 }
+
 
 // Fungsi untuk menampilkan tampilan cetak file PDF
 function printPDF($file)
@@ -137,13 +151,13 @@ function printPDF($file)
 
 <div class="container">
     <div class="content">
-        <h2>Silabus</h2>
+        <h2>Pembelajaran</h2>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Silabus</th>
+                        <th>Pembelajaran</th>
                         <th>Ukuran File</th>
                         <th>Opsi</th>
                     </tr>
@@ -174,7 +188,7 @@ function printPDF($file)
                                 <td>' . $fileInfo['Ukuran File'] . '</td>
                                 <td>
                                     <a href="download.php?file=' . urlencode($file) . '" class="btn btn-success">Download</a>
-                                    <a href="preview.php?file=' . urlencode($file) . '" class="btn btn-primary">Preview</a>
+                                    <button class="btn btn-primary" onclick="previewFile(\'' . urlencode($file) . '\')">Preview</button>
                                     <a href="hapus_silabus.php?id=' . $row['id'] . '" class="btn btn-danger">Hapus</a>
                                 </td>
                             </tr>';
@@ -185,10 +199,29 @@ function printPDF($file)
                 </tbody>
             </table>
         </div>
+        <div id="previewModal" style="display: none;">
+            <div id="modal-content">
+                <span id="close" onclick="closeModal()">&times;</span>
+                <div id="previewModalBody">
+                    <!-- Preview content goes here -->
+                    <div id="videoPreviewContainer">
+                        <!-- Video preview will be displayed here -->
+                    </div>
+                    <div id="commentsSection">
+                        <h3>Comments</h3>
+                        <div id="commentsList">
+                            <!-- Comments will be displayed here -->
+                        </div>
+                        <textarea id="commentInput" placeholder="Leave a comment"></textarea>
+                        <button onclick="postComment()">Post Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <hr />
         <form action="" method="post" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="file">Pilih File Silabus:</label>
+                <label for="file">Pilih File Pembelajaran:</label>
                 <input type="file" name="file" id="file" class="form-control-file">
             </div>
             <button type="submit" class="btn btn-primary">Upload</button>
@@ -208,3 +241,62 @@ if (isset($_GET['file'])) {
 
 include("footer.php");
 ?>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function previewFile(file) {
+        var modal = document.getElementById('previewModal');
+        modal.style.display = 'block';
+
+        var videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        videoPreviewContainer.innerHTML = '<iframe src="preview.php?file=' + file + '" width="100%" height="400px" frameborder="0"></iframe>';
+
+        // Load comments for this previewed file
+        loadComments(file);
+    }
+
+    function loadComments(file) {
+        // Fetch comments for the given file and display them in the comments section
+        // You can make an AJAX request to a server to fetch comments for the specific file
+        // For simplicity, let's assume comments are pre-loaded in a variable.
+
+        var comments = [
+            { username: 'User1', comment: 'This is great!' },
+            { username: 'User2', comment: 'Awesome content.' }
+        ];
+
+        var commentsList = document.getElementById('commentsList');
+        commentsList.innerHTML = '';
+
+        comments.forEach(function(comment) {
+            var commentItem = document.createElement('div');
+            commentItem.classList.add('commentItem');
+            commentItem.innerHTML = '<strong>' + comment.username + ':</strong> ' + comment.comment;
+            commentsList.appendChild(commentItem);
+        });
+    }
+
+    function postComment() {
+        // Post a comment for the previewed file
+        var commentInput = document.getElementById('commentInput');
+        var comment = commentInput.value.trim();
+
+        if (comment !== '') {
+            // Here, you would typically make an AJAX request to send the comment to the server and save it
+            // For simplicity, let's just display the comment
+
+            var commentsList = document.getElementById('commentsList');
+            var commentItem = document.createElement('div');
+            commentItem.classList.add('commentItem');
+            commentItem.innerHTML = '<strong>User:</strong> ' + comment;
+            commentsList.appendChild(commentItem);
+
+            // Clear the comment input after posting
+            commentInput.value = '';
+        }
+    }
+    function closeModal() {
+        var modal = document.getElementById('previewModal');
+        modal.style.display = 'none';
+    }
+</script>

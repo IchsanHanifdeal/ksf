@@ -1,10 +1,8 @@
 <?php
-$file = './' . $_GET['file']; // Dapatkan lokasi file yang akan di-preview
-$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION)); // Dapatkan ekstensi file
+$file = './' . $_GET['file'];
+$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-// Cek apakah file ada
 if (file_exists($file)) {
-    // Tentukan tipe konten berdasarkan ekstensi file
     $contentType = '';
 
     switch ($extension) {
@@ -14,6 +12,7 @@ if (file_exists($file)) {
             break;
         case 'pdf':
             $contentType = 'application/pdf';
+            echo '<script>window.print();</script>';
             break;
         case 'xls':
         case 'xlsx':
@@ -23,17 +22,25 @@ if (file_exists($file)) {
         case 'pptx':
             $contentType = 'application/vnd.ms-powerpoint';
             break;
+        case 'mp4':
+            $contentType = 'video/mp4';
+            echo '<video controls width="100%" height="auto">
+                        <source src="' . $file . '" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>';
+            exit;
+        case 'avi':
+            $contentType = 'video/x-msvideo';
+            echo '<video controls width="100%" height="auto">
+                        <source src="' . $file . '" type="video/avi">
+                        Your browser does not support the video tag.
+                    </video>';
+            exit;
         default:
             echo "Tipe file tidak didukung.";
             exit;
     }
 
-    // Tampilkan tampilan cetak jika file berupa PDF
-    if ($extension === 'pdf') {
-        echo '<script>window.print();</script>';
-    }
-
-    // Tampilkan konten file
     header('Content-Type: ' . $contentType);
     readfile($file);
 } else {
