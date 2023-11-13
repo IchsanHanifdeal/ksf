@@ -5,7 +5,6 @@ $description = "Halaman Pembelajaran";
 include("header.php");
 include("../koneksi.php");
 
-// Fungsi untuk menghasilkan pratinjau PDF menggunakan Google Docs Viewer
 function generatePreview($file, $extension)
 {
     $preview = '';
@@ -22,7 +21,6 @@ function generatePreview($file, $extension)
 
     return $preview;
 }
-// Fungsi untuk mendapatkan informasi tentang silabus yang diunggah
 function getFileInfo($file)
 {
     $fileName = basename($file);
@@ -42,7 +40,6 @@ function getFileInfo($file)
     return $info;
 }
 
-// Fungsi untuk mendapatkan logo file berdasarkan ekstensi
 function getFileLogo($fileExtension)
 {
     $logo = '';
@@ -75,40 +72,31 @@ function getFileLogo($fileExtension)
     return $logo;
 }
 
-// Fungsi untuk mengubah ukuran file menjadi MB
 function formatFileSize($fileSize)
 {
-    $mbSize = round($fileSize / 1048576, 2); // Konversi byte ke megabyte
+    $mbSize = round($fileSize / 1048576, 2);
     return $mbSize . ' MB';
 }
 
-// Cek apakah ada file yang diunggah
 if (isset($_FILES['file'])) {
-    // Tentukan lokasi penyimpanan file yang diunggah
-    $targetDir = "uploads/silabus/"; // Folder tujuan penyimpanan file
-    // Pastikan folder tujuan penyimpanan file sudah ada
+    $targetDir = "uploads/silabus/";
     if (!file_exists($targetDir)) {
         mkdir($targetDir, 0777, true);
     }
-    // Tentukan nama file yang akan diunggah
     $targetFile = $targetDir . basename($_FILES["file"]["name"]);
-    // Cek apakah file yang diunggah memiliki ekstensi yang diizinkan
     $allowedExtensions = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'mp4', 'avi');
     $fileExtension = strtolower(pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION));
     if (!in_array($fileExtension, $allowedExtensions)) {
         echo "File yang diunggah harus dalam format PDF, Word (DOC/DOCX), Excel (XLS/XLSX), PowerPoint (PPT/PPTX), MP4, atau AVI.";
         exit;
     }
-    // Cek apakah terdapat error saat mengunggah file
     if ($_FILES["file"]["error"] > 0) {
         echo "Terjadi kesalahan saat mengunggah file: " . $_FILES["file"]["error"];
         exit;
     }
-    // Pindahkan file yang diunggah ke lokasi penyimpanan
     if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFile)) {
         echo "File berhasil diunggah: " . $targetFile;
 
-        // Simpan informasi file ke dalam database
         $namaFile = basename($_FILES["file"]["name"]);
         $ukuranFile = filesize($targetFile);
         $deskripsi = isset($_POST['deskripsi']) ? mysqli_real_escape_string($koneksi, $_POST['deskripsi']) : '';
@@ -121,7 +109,6 @@ if (isset($_FILES['file'])) {
 }
 
 
-// Fungsi untuk menampilkan tampilan cetak file PDF
 function printPDF($file)
 {
     echo '<script>

@@ -11,7 +11,9 @@ include("akses_user.php");
     <!-- Bootstrap -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
 	<link href="../css/bootstrap-datepicker.css" rel="stylesheet">
-	<!-- JS -->
+	<link rel="stylesheet" href="../app/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/tooltip.js"></script>
@@ -40,6 +42,7 @@ include("akses_user.php");
 			<li<?php if ($thisPage=="Silabus") echo " class=\"active\""; ?>><a href="silabus.php" data-toggle="tooltip" data-placement="bottom" title="Silabus"><span class="glyphicon glyphicon-book"></span> Silabus</a></li>
 			<li<?php if ($thisPage=="Absen") echo " class=\"active\""; ?>><a href="absen.php" data-toggle="tooltip" data-placement="bottom" title="Absen"><span class="glyphicon glyphicon-list"></span> Absen</a></li>
 			<li<?php if ($thisPage=="Materi") echo " class=\"active\""; ?>><a href="materi.php" data-toggle="tooltip" data-placement="bottom" title="Materi"><span class="glyphicon glyphicon-folder-open"></span> Materi</a></li>
+			<li<?php if ($thisPage=="Tugas") echo " class=\"active\""; ?>><a href="tugas.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Tugas Mahasiswa"><span class="glyphicon glyphicon-list"></span> Tugas</a></li>
 			<li<?php if ($thisPage=="Data") echo " class=\"active\""; ?>><a href="data.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Mahasiswa"><span class="glyphicon glyphicon-list"></span> Data Mahasiswa</a></li>
 			<li<?php if ($thisPage=="Nilai") echo " class=\"active\""; ?>><a href="nilai.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Nilai Mahasiswa"><span class="glyphicon glyphicon-list"></span> Nilai Mahasiswa</a></li>
 			<form name="cari" method="post" action="cari.php" role="search" class="navbar-form navbar-left">

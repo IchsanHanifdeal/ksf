@@ -1,9 +1,10 @@
 <?php
 $thisPage = "Tugas";
 $title = "Tugas";
-$description = "Halaman Data Tugas";
+$description = "Halaman Tugas";
 include("header.php");
 include("../koneksi.php");
+
 
 function getTugasInfo($tugas)
 {
@@ -85,7 +86,7 @@ function getFileLogo($tugasExtension)
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             $idTugas = $row["TugasID"];
-                            $tugas = 'uploads/tugas/' . $row["Judul"] . $row["FileTugas"];
+                            $tugas = '../dosen/uploads/tugas/' . $row["Judul"] . $row["FileTugas"];
                             $TugasInfo = getTugasInfo($tugas);
                             $deskripsi = $row["Deskripsi"];
                             $deadline = $row["WaktuPengumpulan"];
@@ -94,16 +95,14 @@ function getFileLogo($tugasExtension)
                             <tr>
                                 <td><?php echo $nomor; ?></td>
                                 <td>
-                                    <img src="icons/<?= $TugasInfo['Logo File'] ?>" alt="<?= $TugasInfo['Ekstensi File'] ?>" height="50px" width="50px">
+                                    <img src="../dosen/icons/<?= $TugasInfo['Logo File'] ?>" alt="<?= $TugasInfo['Ekstensi File'] ?>" height="50px" width="50px">
                                     <?= $TugasInfo['Nama File'] ?>          
                                 </td>
                                 <td><?php echo $deskripsi; ?></td>
                                 <td><?php echo $deadline; ?></td>
                                 <td><?php echo $Status; ?></td>
                                 <td style="text-align:center;">
-                                    <a class="btn btn-warning fa fa-edit" href="editTugas.php?TugasID=<?php echo $idTugas; ?>"></a> |
-                                    <a class="btn btn-danger fa fa-trash" href="HapusTugas.php?TugasID=<?php echo $idTugas; ?>"></a> | 
-                                    <a class="btn btn-primary fa fa-users" href="nilaiTugas.php?TugasID=<?php echo $idTugas; ?>"></a>
+                                    <a class="btn btn-primary fa fa-upload" href="uploadTugas.php?TugasID=<?php echo $idTugas; ?>"> Upload</a>
                                 </td>
                             </tr>
                             <?php
@@ -117,6 +116,5 @@ function getFileLogo($tugasExtension)
             </table>
         </div>
         <hr />
-        <a class="btn btn-primary" href="TambahTugas.php">Tambah Tugas</a>
     </div>
 </div>

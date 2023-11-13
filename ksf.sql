@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 23 Jun 2023 pada 02.45
--- Versi server: 10.4.27-MariaDB
--- Versi PHP: 7.4.33
+-- Waktu pembuatan: 13 Nov 2023 pada 18.56
+-- Versi server: 10.4.28-MariaDB
+-- Versi PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sidm`
+-- Database: `ksf`
 --
 
 -- --------------------------------------------------------
@@ -83,6 +83,20 @@ INSERT INTO `dosen` (`id_dosen`, `nip`, `nama_dosen`, `jenis_kelamin`, `tempat_l
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `komentar`
+--
+
+CREATE TABLE `komentar` (
+  `id_komentar` int(11) NOT NULL,
+  `id_materi` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `komentar` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `materi`
 --
 
@@ -123,22 +137,31 @@ INSERT INTO `matkul` (`kd_matkul`, `nm_matkul`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `nilai`
+--
+
+CREATE TABLE `nilai` (
+  `NilaiID` int(11) NOT NULL,
+  `TugasID` int(11) DEFAULT NULL,
+  `NamaDosen` varchar(100) DEFAULT NULL,
+  `Nilai` int(11) DEFAULT NULL,
+  `Komentar` text DEFAULT NULL,
+  `WaktuPenilaian` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `silabus`
 --
 
 CREATE TABLE `silabus` (
   `id` int(11) NOT NULL,
   `nama_file` varchar(255) NOT NULL,
+  `Deskripsi` varchar(255) NOT NULL,
   `ukuran_file` int(11) NOT NULL,
   `waktu_upload` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `silabus`
---
-
-INSERT INTO `silabus` (`id`, `nama_file`, `ukuran_file`, `waktu_upload`) VALUES
-(31, 'CV+Terbaru_compressed.pdf', 417294, '2023-05-27 09:06:46');
 
 -- --------------------------------------------------------
 
@@ -169,13 +192,6 @@ CREATE TABLE `tbl_absen` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data untuk tabel `tbl_absen`
---
-
-INSERT INTO `tbl_absen` (`id`, `nim`, `pertemuan1`, `pertemuan2`, `pertemuan3`, `pertemuan4`, `pertemuan5`, `pertemuan6`, `pertemuan7`, `pertemuan8`, `pertemuan9`, `pertemuan10`, `pertemuan11`, `pertemuan12`, `pertemuan13`, `pertemuan14`, `pertemuan15`, `pertemuan16`, `created_at`, `updated_at`) VALUES
-(15, '12345', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2023-06-22 18:43:30', '2023-06-22 18:43:30');
-
 -- --------------------------------------------------------
 
 --
@@ -205,8 +221,25 @@ CREATE TABLE `tbl_mahasiswa` (
 --
 
 INSERT INTO `tbl_mahasiswa` (`nim`, `username`, `password`, `level`, `nama`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat_asal`, `alamat_sekarang`, `no_telepon`, `email`, `agama`, `jurusan`, `fakultas`) VALUES
+('1234', 'tes', '$2y$10$VSBCvFAW6af5UyY9sAzAc.lh5', 'user', 'tes', 'Laki-Laki', 'tes', '2002-09-30', 'batusangkar', 'tes', '08123', 'ichsanhanifdeal@gmail.com', 'Islam', 'Manajemen Informatika', ''),
 ('12345', 'user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user', 'user', 'Laki-Laki', 'user', '2002-09-30', 'user', 'user', 'user', 'user@gmail.com', 'Islam', '', 'MI'),
 ('admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'admin', 'admin', 'Laki-Laki', 'admin', '2023-05-02', 'admin', 'admin', 'admin', 'admin@gmail.com', 'Islam', 'Manajemen Informatika', '');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tugas`
+--
+
+CREATE TABLE `tugas` (
+  `TugasID` int(11) NOT NULL,
+  `nim` varchar(20) DEFAULT NULL,
+  `Judul` varchar(255) DEFAULT NULL,
+  `Deskripsi` text DEFAULT NULL,
+  `FileTugas` varchar(255) DEFAULT NULL,
+  `WaktuPengumpulan` datetime DEFAULT NULL,
+  `Status` enum('Belum dinilai','Sudah dinilai') DEFAULT 'Belum dinilai'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -225,6 +258,12 @@ ALTER TABLE `dosen`
   ADD PRIMARY KEY (`id_dosen`);
 
 --
+-- Indeks untuk tabel `komentar`
+--
+ALTER TABLE `komentar`
+  ADD PRIMARY KEY (`id_komentar`);
+
+--
 -- Indeks untuk tabel `materi`
 --
 ALTER TABLE `materi`
@@ -235,6 +274,13 @@ ALTER TABLE `materi`
 --
 ALTER TABLE `matkul`
   ADD PRIMARY KEY (`kd_matkul`);
+
+--
+-- Indeks untuk tabel `nilai`
+--
+ALTER TABLE `nilai`
+  ADD PRIMARY KEY (`NilaiID`),
+  ADD KEY `TugasID` (`TugasID`);
 
 --
 -- Indeks untuk tabel `silabus`
@@ -256,6 +302,12 @@ ALTER TABLE `tbl_mahasiswa`
   ADD PRIMARY KEY (`nim`);
 
 --
+-- Indeks untuk tabel `tugas`
+--
+ALTER TABLE `tugas`
+  ADD PRIMARY KEY (`TugasID`);
+
+--
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
@@ -272,6 +324,12 @@ ALTER TABLE `dosen`
   MODIFY `id_dosen` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT untuk tabel `komentar`
+--
+ALTER TABLE `komentar`
+  MODIFY `id_komentar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT untuk tabel `materi`
 --
 ALTER TABLE `materi`
@@ -284,10 +342,16 @@ ALTER TABLE `matkul`
   MODIFY `kd_matkul` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
+-- AUTO_INCREMENT untuk tabel `nilai`
+--
+ALTER TABLE `nilai`
+  MODIFY `NilaiID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `silabus`
 --
 ALTER TABLE `silabus`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_absen`
@@ -296,8 +360,20 @@ ALTER TABLE `tbl_absen`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT untuk tabel `tugas`
+--
+ALTER TABLE `tugas`
+  MODIFY `TugasID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
+
+--
+-- Ketidakleluasaan untuk tabel `nilai`
+--
+ALTER TABLE `nilai`
+  ADD CONSTRAINT `nilai_ibfk_1` FOREIGN KEY (`TugasID`) REFERENCES `tugas` (`TugasID`);
 
 --
 -- Ketidakleluasaan untuk tabel `tbl_absen`

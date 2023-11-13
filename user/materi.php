@@ -5,7 +5,6 @@ $description = "Halaman Materi";
 include("header.php");
 include("../koneksi.php");
 
-// Fungsi untuk menghasilkan pratinjau PDF menggunakan Google Docs Viewer
 function generatePreview($file, $extension)
 {
     $preview = '';
