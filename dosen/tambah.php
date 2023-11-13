@@ -12,37 +12,41 @@ include("../koneksi.php");
 			
 			<?php
 			if(isset($_POST['add'])){ 
-				$nim		     = $_POST['nim'];
-				$nama		     = $_POST['nama'];
-				$jenis_kelamin   = $_POST['jenis_kelamin'];
-				$tempat_lahir	 = $_POST['tempat_lahir'];
-				$tanggal_lahir	 = $_POST['tanggal_lahir'];
-				$alamat_asal     = $_POST['alamat_asal'];
-				$alamat_sekarang = $_POST['alamat_sekarang'];
-				$no_telepon		 = $_POST['no_telepon'];
-				$email  		 = $_POST['email'];
-				$agama 			 = $_POST['agama'];
-				$jurusan	     = $_POST['jurusan'];
-				$username		 = $_POST['username'];
-				$level			 = $_POST['level'];
-				$pass1	         = $_POST['pass1'];
-				$pass2           = $_POST['pass2'];
+				$nim		     = mysqli_real_escape_string($koneksi, $_POST['nim']);
+				$nama		     = mysqli_real_escape_string($koneksi, $_POST['nama']);
+				$jenis_kelamin   = mysqli_real_escape_string($koneksi, $_POST['jenis_kelamin']);
+				$tempat_lahir	 = mysqli_real_escape_string($koneksi, $_POST['tempat_lahir']);
+				$tanggal_lahir	 = mysqli_real_escape_string($koneksi, $_POST['tanggal_lahir']);
+				$alamat_asal     = mysqli_real_escape_string($koneksi, $_POST['alamat_asal']);
+				$alamat_sekarang = mysqli_real_escape_string($koneksi, $_POST['alamat_sekarang']);
+				$no_telepon		 = mysqli_real_escape_string($koneksi, $_POST['no_telepon']);
+				$email  		 = mysqli_real_escape_string($koneksi, $_POST['email']);
+				$agama 			 = mysqli_real_escape_string($koneksi, $_POST['agama']);
+				$jurusan	     = mysqli_real_escape_string($koneksi, $_POST['jurusan']);
+				$username		 = mysqli_real_escape_string($koneksi, $_POST['username']);
+				$level			 = mysqli_real_escape_string($koneksi, $_POST['level']);
+				$pass1	         = mysqli_real_escape_string($koneksi, $_POST['pass1']);
+				$pass2           = mysqli_real_escape_string($koneksi, $_POST['pass2']);
 				
-				$cek = mysqli_query($koneksi, "SELECT * FROM tbl_mahasiswa WHERE nim='$nim'"); 
-				if(mysqli_num_rows($cek) == 0){ 
-					if($pass1 == $pass2){ 
-						$pass = md5($pass1); 
-						$insert = mysqli_query($koneksi, "INSERT INTO tbl_mahasiswa(nim, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat_asal, alamat_sekarang, no_telepon, email, agama, jurusan, username, level, password) VALUES('$nim','$nama', '$jenis_kelamin', '$tempat_lahir', '$tanggal_lahir', '$alamat_asal', '$alamat_sekarang', '$no_telepon', '$email', '$agama', '$jurusan', '$username', '$level', '$pass')") or die(mysqli_error()); 
-						if($insert){ 
-							echo '<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Data Mahasiswa Berhasil Di Simpan. <a href="data.php"><- Kembali</a></div>'; 
-						}else{ 
-							echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Ups, Data Mahasiswa Gagal Di simpan! <a href="data.php"><- Kembali</a></div>'; 
+				$password = password_hash($_POST['pass1'], PASSWORD_DEFAULT);
+				$check_query = "SELECT * FROM tbl_mahasiswa WHERE nim='$nim'";
+				$check_result = mysqli_query($koneksi, $check_query);
+				if (mysqli_num_rows($check_result) == 0) {
+					if ($_POST['pass1'] == $_POST['pass2']) {
+						$insert_query = "INSERT INTO tbl_mahasiswa (nim, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat_asal, alamat_sekarang, no_telepon, email, agama, jurusan, username, level, password) 
+										VALUES ('$nim', '$nama', '$jenis_kelamin', '$tempat_lahir', '$tanggal_lahir', '$alamat_asal', '$alamat_sekarang', '$no_telepon', '$email', '$agama', '$jurusan', '$username', '$level', '$password')";
+			
+						$insert = mysqli_query($koneksi, $insert_query);
+						if ($insert) {
+							echo '<div>Data Mahasiswa Berhasil Disimpan. <a href="index.php"><- Kembali</a></div>';
+						} else {
+							echo '<div>Ups, Data Mahasiswa Gagal Disimpan! <a href="index.php"><- Kembali</a></div>';
 						}
-					} else{ 
-						echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Password Tidak sama!</div>'; 
+					} else {
+						echo '<div>Password Tidak sama!</div>';
 					}
-				}else{ 
-					echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>NIM Sudah Ada..! <a href="data.php"><- Kembali</a></div>'; 
+				} else {
+					echo '<div>NIM Sudah Ada..! <a href="index.php"><- Kembali</a></div>';
 				}
 			}
 			?>

@@ -38,8 +38,10 @@ require("koneksi.php");
 			
 			$sql = mysqli_query($koneksi, "SELECT * FROM dosen WHERE username='$user'") or die(mysqli_error($koneksi));
 			$row2 = mysqli_fetch_assoc($sql);
+			$Nama_Pengguna = $row2['nama_dosen'];
 			if($row2['level'] == 'dosen'){
 				$_SESSION['dosen']=$user;
+				$_SESSION['nama_dosen'] = $Nama_Pengguna;
 				$_SESSION['level']='dosen';
 				$_SESSION['id_dosen'] = $row2['id_dosen'];
 				echo '<script language="javascript">document.location="dosen/index.php";</script>';

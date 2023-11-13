@@ -11,6 +11,8 @@ include("akses_dosen.php");
 	<title><?php echo $title; ?></title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
 	<link href="../css/bootstrap-datepicker.css" rel="stylesheet">
+	<link rel="stylesheet" href="../app/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/tooltip.js"></script>
@@ -33,21 +35,23 @@ include("akses_dosen.php");
 		  </button>
 		</div>
 		<div class="collapse navbar-collapse" id="myNavbar">
-		  <ul class="nav navbar-nav navbar-left">
-			<li<?php if ($thisPage=="Dashboard") echo " class=\"active\""; ?>><a href="index.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-			<li<?php if ($thisPage=="Silabus") echo " class=\"active\""; ?>><a href="silabus.php" data-toggle="tooltip" data-placement="bottom" title="Silabus"><span class="glyphicon glyphicon-book"></span> Pembelajaran</a></li>
-			<li<?php if ($thisPage=="Materi") echo " class=\"active\""; ?>><a href="materi.php" data-toggle="tooltip" data-placement="bottom" title="Materi"><span class="glyphicon glyphicon-folder-open"></span> Materi</a></li>
-			<li<?php if ($thisPage=="Data Dosen") echo " class=\"active\""; ?>><a href="data.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Dosen"><span class="glyphicon glyphicon-list"></span> Data Dosen</a></li>
-			<li<?php if ($thisPage=="Data Mahasiswa") echo " class=\"active\""; ?>><a href="data_mahasiswa.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Mahasiswa"><span class="glyphicon glyphicon-list"></span> Data Mahasiswa</a></li>
-			<li<?php if ($thisPage=="Data Absensi") echo " class=\"active\""; ?>><a href="absen.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Absensi Mahasiswa"><span class="glyphicon glyphicon-list"></span> Data Absensi</a></li>
-			<li<?php if ($thisPage=="Nilai") echo " class=\"active\""; ?>><a href="nilai.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Nilai Mahasiswa"><span class="glyphicon glyphicon-list"></span> Nilai Mahasiswa</a></li>
-			<form name="cari" method="post" action="cari.php" role="search" class="navbar-form navbar-left">
-				<div class="form-group">
-					<input type="text" name="carinim" placeholder="Cari NIM Mahasiswa" class="form-control">
-				</div>
-				<button type="submit" name="submit" id="submit" value="search" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Cari Data Mahasiswa">Cari</button>
-			</form>
-		  </ul>
+			<ul class="nav navbar-nav navbar-left">
+					<li<?php if ($thisPage == "Dashboard") echo " class=\"active\""; ?>><a href="index.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+					<li<?php if ($thisPage == "Pembelajaran") echo " class=\"active\""; ?>><a href="silabus.php" data-toggle="tooltip" data-placement="bottom" title="Pembelajaran"><span class="glyphicon glyphicon-book"></span> Pembelajaran</a></li>
+					<li<?php if ($thisPage == "Materi") echo " class=\"active\""; ?>><a href="materi.php" data-toggle="tooltip" data-placement="bottom" title="Materi"><span class="glyphicon glyphicon-folder-open"></span> Materi</a></li>
+					<li<?php if ($thisPage == "Data Dosen") echo " class=\"active\""; ?>><a href="data.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Dosen"><span class="glyphicon glyphicon-list"></span> Data Dosen</a></li>
+					<li<?php if ($thisPage == "Data Mahasiswa") echo " class=\"active\""; ?>><a href="data_mahasiswa.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Mahasiswa"><span class="glyphicon glyphicon-list"></span> Data Mahasiswa</a></li>
+					<li<?php if ($thisPage == "Data Absensi") echo " class=\"active\""; ?>><a href="absen.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Absensi Mahasiswa"><span class="glyphicon glyphicon-list"></span> Data Absensi</a></li>
+					<li<?php if ($thisPage == "Data Tugas") echo " class=\"active\""; ?>><a href="tugas.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Data Tugas Mahasiswa"><span class="glyphicon glyphicon-list-alt"></span> Tugas</a></li>
+					<li<?php if ($thisPage == "Nilai") echo " class=\"active\""; ?>><a href="nilai.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Nilai Mahasiswa"><span class="glyphicon glyphicon-list"></span> Nilai Mahasiswa</a></li>
+				</ul>
+				<form name="cari" method="post" action="cari.php" role="search" class="navbar-form navbar-left">
+					<div class="form-group">
+						<input type="text" name="carinim" placeholder="Cari NIM Mahasiswa" class="form-control">
+					</div>
+					<button type="submit" name="submit" id="submit" value="search" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Cari Data Mahasiswa">Cari</button>
+				</form>
+		  	</ul>
 	      <ul class="nav navbar-nav navbar-right">
 	      	<li<?php if ($thisPage=="Profile") echo " class=\"active\""; ?>><a href="profile.php" data-toggle="tooltip" data-placement="bottom" title="Lihat Profile"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
 	        <a href="../logout.php" data-toggle="tooltip" data-placement="bottom" title="Logout" class="btn btn-danger navbar-btn" role="button"><span class="glyphicon glyphicon-off"></span> Logout</a>

@@ -22,17 +22,6 @@ function generatePreview($file, $extension)
 
     return $preview;
 }
-
-function generateVideoPreview($file)
-{
-    $preview = '<video controls width="100%" height="auto">
-                    <source src="' . $file . '" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>';
-
-    return $preview;
-}
-
 // Fungsi untuk mendapatkan informasi tentang silabus yang diunggah
 function getFileInfo($file)
 {
@@ -41,12 +30,6 @@ function getFileInfo($file)
     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $fileLogo = getFileLogo($fileExtension);
     $filePreview = '';
-
-    if ($fileExtension === 'mp4' || $fileExtension === 'avi') {
-        $filePreview = generateVideoPreview($file);
-    } else {
-        $filePreview = generatePreview($file, $fileExtension);
-    }
 
     $info = array(
         'Nama File' => $fileName,
@@ -159,57 +142,50 @@ function printPDF($file)
                     <tr>
                         <th>No</th>
                         <th>Pembelajaran</th>
-                        <th>Deskripsi</th>
-                        <th>Ukuran File</th>
-                        <th>Opsi</th>
+                        <th class="text-center">Ukuran File</th>
+                        <th class="text-center">Opsi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $filter = false;
+                <?php
+$filter = false;
 
-                    if ($filter) {
-                        $query = "SELECT * FROM Silabus";
-                    } else {
-                        $query = "SELECT * FROM Silabus ORDER BY nama_file ASC";
-                    }
+if ($filter) {
+    $query = "SELECT * FROM Silabus";
+} else {
+    $query = "SELECT * FROM Silabus ORDER BY nama_file ASC";
+}
 
-                    $result = mysqli_query($koneksi, $query);
+$result = mysqli_query($koneksi, $query);
 
-                    if (mysqli_num_rows($result) == 0) {
-                        echo '<tr><td colspan="4">Data Tidak Ada.</td></tr>';
-                    } else {
-                        $no = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $file = 'uploads/silabus/' . $row['nama_file'];
-                            $fileInfo = getFileInfo($file);
-                            echo '<tr>
-                <td>' . $no . '</td>
-                <td>
-                    <img src="icons/' . $fileInfo['Logo File'] . '" alt="' . $fileInfo['Ekstensi File'] . '" height="50px" width="50px">
-                    ' . $fileInfo['Nama File'] . '
-                    <div id="previewModal" style="display: none;">
-                        <div id="modal-content">
-                            <span id="close" onclick="closeModal()">&times;</span>
-                            <div id="previewModalBody">
-                                <div id="videoPreviewContainer">
-                                </div>
-                            </div>
-                        </div>
-                    </div>                        
-                </td>
-                <td>' . $row['Deskripsi'] . '</td>
-                <td>' . $fileInfo['Ukuran File'] . '</td>
-                <td>
-                    <a href="download.php?file=' . urlencode($file) . '" class="btn btn-success">Download</a>
-                    <button class="btn btn-primary" onclick="previewFile(\'' . urlencode($file) . '\')">Preview</button>
-                    <a href="hapus_silabus.php?id=' . $row['id'] . '" class="btn btn-danger">Hapus</a>
-                </td>
-            </tr>';
-                            $no++;
-                        }
-                    }
-                    ?>
+if (mysqli_num_rows($result) == 0) {
+    echo '<tr><td colspan="4">Data Tidak Ada.</td></tr>';
+} else {
+    $no = 1;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $file = 'uploads/silabus/' . $row['nama_file'];
+        $fileInfo = getFileInfo($file);
+        ?>
+
+        <tr>
+            <td><?= $no ?></td>
+            <td>
+                <img src="icons/<?= $fileInfo['Logo File'] ?>" alt="<?= $fileInfo['Ekstensi File'] ?>" height="50px" width="50px">
+                <?= $fileInfo['Nama File'] ?>          
+            </td>
+            <td class="text-center"><?= $fileInfo['Ukuran File'] ?></td>
+            <td class="text-center">
+                <a href="download.php?file=<?= urlencode($file) ?>" class="btn btn-success">Download</a>
+                <a class="btn btn-primary" href="detail_silabus.php?id=<?= $row['id'] ?>">Detail</a>
+                <a href="hapus_silabus.php?id=<?= $row['id'] ?>" class="btn btn-danger">Hapus</a>
+            </td>
+        </tr>
+
+        <?php
+        $no++;
+    }
+}
+?>
                 </tbody>
             </table>
         </div>
@@ -250,47 +226,5 @@ include("footer.php");
         var videoPreviewContainer = document.getElementById('videoPreviewContainer');
         videoPreviewContainer.innerHTML = '<iframe src="preview.php?file=' + file + '" width="100%" height="400px" frameborder="0"></iframe>';
         loadComments(file);
-    }
-
-    function loadComments(file) {
-        var comments = [{
-                username: 'User1',
-                comment: 'This is great!'
-            },
-            {
-                username: 'User2',
-                comment: 'Awesome content.'
-            }
-        ];
-
-        var commentsList = document.getElementById('commentsList');
-        commentsList.innerHTML = '';
-
-        comments.forEach(function(comment) {
-            var commentItem = document.createElement('div');
-            commentItem.classList.add('commentItem');
-            commentItem.innerHTML = '<strong>' + comment.username + ':</strong> ' + comment.comment;
-            commentsList.appendChild(commentItem);
-        });
-    }
-
-    function postComment() {
-        // Post a comment for the previewed file
-        var commentInput = document.getElementById('commentInput');
-        var comment = commentInput.value.trim();
-
-        if (comment !== '') {
-            var commentsList = document.getElementById('commentsList');
-            var commentItem = document.createElement('div');
-            commentItem.classList.add('commentItem');
-            commentItem.innerHTML = '<strong>User:</strong> ' + comment;
-            commentsList.appendChild(commentItem);
-            commentInput.value = '';
-        }
-    }
-
-    function closeModal() {
-        var modal = document.getElementById('previewModal');
-        modal.style.display = 'none';
     }
 </script>
